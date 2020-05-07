@@ -24,20 +24,13 @@ var serverHttps = https.createServer(options, app).listen(httpsPort, () => {
     console.log(">> Server listening at port " + httpsPort);
 });
 
-/*Request | routing handler*/
-app.use('/index', express.static(__dirname + '/clientFiles'));  //main page
+/*Routing handler*/
+app.use('/index', express.static(__dirname + '/clientFiles')); //main page
 
 // Parse URL-encoded bodies (as sent by HTML forms)
 app.use(express.urlencoded({ extended: true }));
 
-// Parse JSON bodies (as sent by API clients)
-
-app.post('/vats', function(req, res){                           //post request from page
-  let dataReceived;
-  //res.end('It worked!');
-
-  let body;
-
+app.post('/vats', function(req, res){ //post request from page
   req.on('data', chunk => {
       processNips(chunk.toString().split(' '));
   });
@@ -47,7 +40,7 @@ app.post('/vats', function(req, res){                           //post request f
     if(data){
 
       let dataObj = {
-        processed: [], //Results go here in form of objects {kod, komunikat, nip}
+        processed: [], //Results go here in form of objects {vat status, messeage, nip}
         add: function(comm, nipFromRes){
           this.processed.push({kod: comm.Kod, komunikat: comm.Komunikat, nip: nipFromRes});
         },
@@ -63,7 +56,7 @@ app.post('/vats', function(req, res){                           //post request f
 
           function timer(){
             var url = 'https://sprawdz-status-vat.mf.gov.pl/?wsdl'; //API adress
-            var args = { nip: data[0] };
+            var args = { nip: data[0] }; //Only one nip checked at a time. Only for tests.
 
             soap.createClient(url, function(err, client) {
               client.SprawdzNIP(args, function(err, result) {
