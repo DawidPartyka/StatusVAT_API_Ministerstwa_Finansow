@@ -44,7 +44,7 @@ app.post('/vats', function(req, res){ //post request from page
         add: function(comm, nipFromRes){
           this.processed.push({kod: comm.Kod, komunikat: comm.Komunikat, nip: nipFromRes});
         },
-        show: function(){
+        show: function(){ //Show received data in console
           let tmp = this.processed;
           for(let i = 0; i < this.processed.length; i++){
             console.log('Element ' + i + '{');
