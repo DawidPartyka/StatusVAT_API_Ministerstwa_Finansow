@@ -17,7 +17,6 @@ Przykładowe dane:
 2090001440  
   
 Plik wyjściowy w formie pliku tekstowego:  
-  
 NIP:	7791011327  
 Status:	Podmiot o podanym identyfikatorze podatkowym NIP jest zarejestrowany jako podatnik VAT czynny  
 Kod:	C  
