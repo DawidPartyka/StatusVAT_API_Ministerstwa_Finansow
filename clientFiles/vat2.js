@@ -39,35 +39,35 @@ let writeFile = {
 
 let receivedData = {
   getData: function(arr){
-    let sData = arr.join(" ");
+    let sData = arr.join(" "); //..NIPs to send as a string with numbers separated by spaces
     console.log("sdata: " + sData);
     console.log(arr.length);
     console.log('calling server');
-
+  
+    //..A POST call to server
     $.ajax({
               url: '/vats',
               type: 'POST',
               contentType: 'plain/text',
-              data: sData.replace(/\n|\r/g, ""), //NIPy
+              data: sData.replace(/\n|\r/g, ""), //NIPs sent as a text
               success: function(response){
-                let obj = JSON.parse(response);
-                let data = [];
+                let obj = JSON.parse(response);  //Received data in form of JSON
+                let data = [];                   //Placeholder for received data in form of objects {nip, communique, code}
 
                 while(obj.length){
                   console.log('\tkod: ' + obj[0].kod + ',\n\tkomunikat: ' + obj[0].komunikat + ',\n\tnip: ' + obj[0].nip + '\n');
-                  data.push({nip: obj[0].nip, comm: obj[0].komunikat, code: obj[0].kod});
-                  //this.addData(obj[0]);
-                  obj.shift();
-                }
+                  data.push({nip: obj[0].nip, comm: obj[0].komunikat, code: obj[0].kod}); //Add data to array in form of object
+                  obj.shift();          //Remove first element
+                } 
 
-                writeFile.write(data);
+                writeFile.write(data);  //Start creating an output file for download
               }
             });
   }
 }
 
 $(document).ready(function(){
-  //File upload to calculate CRC
+  //File upload with NIP numbers
   document.getElementById('inputfile').onchange = function (evt) {
     var f = evt.target.files[0];
 
@@ -77,12 +77,11 @@ $(document).ready(function(){
 
       r.onload = function(e) {
         let contents = e.target.result;
-        let dataArr = contents.substr(0, contents.length).split("\n");
-        //console.log(dataArr);
+        let dataArr = contents.substr(0, contents.length).split("\n"); //Split numbers on newlines. One NIP for each line
 
-        if(dataArr.length){
+        if(dataArr.length){              //Sanity check
           console.log(dataArr.length);
-          receivedData.getData(dataArr);
+          receivedData.getData(dataArr); //Method to send that through POST request to server
         }
       }
 
