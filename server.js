@@ -62,7 +62,9 @@ app.post('/vats', function(req, res){               //POST request from client
         },
         startCalls: function(data){
           let tmp = data;
-          let timedCalls = setInterval(function(){ timer() }, 100);  /* Making calls every 0.1sec as given in the documentation
+          let timedCalls = setInterval(function(){ timer() }, 100);  /* Making calls in intervals as given in the documentation.
+                                                                     10 NIPs per second so the functions makes call with a single
+                                                                     NIP every 0.1 second
                                                                      https://www.podatki.gov.pl/media/3275/specyfikacja-we-wy.pdf */ 
           function timer(){
             var url = 'https://sprawdz-status-vat.mf.gov.pl/?wsdl';  //API adress
