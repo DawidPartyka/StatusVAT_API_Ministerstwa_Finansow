@@ -174,7 +174,7 @@ app.post('/vats', function(req, res){                           //Handle POST re
       this.connection.end();
       console.log('Closed DB connection');
     },
-    checkNIP: function(data){                             //data = nip numbers (array), date = check status of given nip for given date
+    checkNIP: function(data){                             //data = NIP numbers (array)
       let date = dataObj.date;                            //Get current date
       let query = `SELECT * FROM status_nip WHERE `;      //Placeholder for query to DB
 
