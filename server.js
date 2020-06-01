@@ -149,10 +149,10 @@ app.post('/vats', function(req, res){                           //Handle POST re
 
   let DBobj = {
     connection: mysql.createConnection({                //Connection DB data
-      host: 'localhost',
-      user: 'root',
+      host: '',
+      user: '',
       password: '',
-      database: 'systemy_zintegrowane'
+      database: ''
     }),
     connect: function(){                                //Open connection with DB
       let flag = false;                                 //Flag to determine if connection succeeded
