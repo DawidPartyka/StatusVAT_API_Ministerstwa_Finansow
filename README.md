@@ -20,22 +20,17 @@ Przykładowe dane:
 2090001440  
   
 Plik wyjściowy w formie pliku tekstowego:  
-NIP:	7791011327  
+NIP:	7891788162  
 Status:	Podmiot o podanym identyfikatorze podatkowym NIP jest zarejestrowany jako podatnik VAT czynny  
 Kod:	C  
+Aktualne na dzień:	2020-06-01  
   
-NIP:	5261037737  
+NIP:	8141019514  
 Status:	Podmiot o podanym identyfikatorze podatkowym NIP jest zarejestrowany jako podatnik VAT czynny  
 Kod:	C  
+Aktualne na dzień:	2020-06-01  
   
-NIP:	7811897358  
+NIP:	8571091402  
 Status:	Podmiot o podanym identyfikatorze podatkowym NIP jest zarejestrowany jako podatnik VAT czynny  
 Kod:	C  
-
-NIP:	7792092747  
-Status:	Podmiot o podanym identyfikatorze podatkowym NIP jest zarejestrowany jako podatnik VAT czynny  
-Kod:	C  
-  
-NIP:	7811897358  
-Status:	Podmiot o podanym identyfikatorze podatkowym NIP jest zarejestrowany jako podatnik VAT czynny  
-Kod:	C  
+Aktualne na dzień:	2020-06-01
