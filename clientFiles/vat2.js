@@ -1,9 +1,26 @@
+function checkNip(nip) {
+    if (typeof nip !== 'string')
+        return false;
+
+    nip = nip.replace(/[\ \-]/gi, '');
+
+    let weight = [6, 5, 7, 2, 3, 4, 5, 6, 7];
+    let sum = 0;
+    let controlNumber = parseInt(nip.substring(9, 10));
+    let weightCount = weight.length;
+    for (let i = 0; i < weightCount; i++) {
+        sum += (parseInt(nip.substr(i, 1)) * weight[i]);
+    }
+
+    return sum % 11 === controlNumber;
+}
+
 let writeFile = {
   content: function(data){
     let content = '';
     //----------Prepare data to make file--------------
     data.forEach(function(entry){
-      content += `NIP:\t${entry.nip}\nStatus:\t${entry.comm}\nKod:\t${entry.code}\n\n`
+      content += `NIP:\t${entry.nip}\nStatus:\t${entry.comm}\nKod:\t${entry.code}\nAktualne na dzień:\t${entry.date}\n\n`;
     });
     //----------Prepare data to make file--------------
 
@@ -39,35 +56,44 @@ let writeFile = {
 
 let receivedData = {
   getData: function(arr){
-    let sData = arr.join(" "); //..NIPs to send as a string with numbers separated by spaces
-    console.log("sdata: " + sData);
-    console.log(arr.length);
-    console.log('calling server');
-  
-    //..A POST call to server
+    let sData = [];                       //Placeholoder for checked NIP numbers
+
+    console.log(`Arr len: ${arr.length}`);
+
+    arr.forEach((entry) => {
+      if(checkNip(entry)){                //Check if it's a valid NIP number
+        if(sData.indexOf(entry) === -1){  //Check if it's not a duplicate
+          sData.push(entry);              //Push data to the array
+        }
+      }
+    });
+
+    sData = sData.join(" ");              //Join data in array to be sent as plain text
+    console.log('Calling server');
+
     $.ajax({
               url: '/vats',
               type: 'POST',
               contentType: 'plain/text',
-              data: sData.replace(/\n|\r/g, ""), //NIPs sent as a text
+              data: sData.replace(/\n|\r/g, ""),  //NIP numbers
               success: function(response){
-                let obj = JSON.parse(response);  //Received data in form of JSON
-                let data = [];                   //Placeholder for received data in form of objects {nip, communique, code}
+                let obj = JSON.parse(response);   //Parse received JSON data
+                let data = [];                    //Placeholoder for received data
 
                 while(obj.length){
                   console.log('\tkod: ' + obj[0].kod + ',\n\tkomunikat: ' + obj[0].komunikat + ',\n\tnip: ' + obj[0].nip + '\n');
-                  data.push({nip: obj[0].nip, comm: obj[0].komunikat, code: obj[0].kod}); //Add data to array in form of object
-                  obj.shift();          //Remove first element
-                } 
+                  data.push({nip: obj[0].nip, comm: obj[0].komunikat, code: obj[0].kod, date: obj[0].date});
+                  obj.shift();                    //Remove first already processed element
+                }
 
-                writeFile.write(data);  //Start creating an output file for download
+                writeFile.write(data);            //Create a file to download
               }
             });
   }
 }
 
 $(document).ready(function(){
-  //File upload with NIP numbers
+  //File upload to calculate CRC
   document.getElementById('inputfile').onchange = function (evt) {
     var f = evt.target.files[0];
 
@@ -77,11 +103,10 @@ $(document).ready(function(){
 
       r.onload = function(e) {
         let contents = e.target.result;
-        let dataArr = contents.substr(0, contents.length).split("\n"); //Split numbers on newlines. One NIP for each line
+        let dataArr = contents.substr(0, contents.length).split("\n");
 
-        if(dataArr.length){              //Sanity check
-          console.log(dataArr.length);
-          receivedData.getData(dataArr); //Method to send that through POST request to server
+        if(dataArr.length){
+          receivedData.getData(dataArr);  //Make a POST call to a server with received data
         }
       }
 
