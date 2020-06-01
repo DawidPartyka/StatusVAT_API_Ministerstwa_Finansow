@@ -1,6 +1,9 @@
 # StatusVAT_API_Ministerstwa_Finansow
 Aplikacja oparta o Node.JS w celu sprawdzenia statusu VAT w oparciu o podany numer NIP za pomocą API ministerstwa finansów.  
 Lista statusów zostaje pobrana po stronie klienta w formie pliku tekstowego.  
+W pierwszej kolejności sprawdzona zostaje baza danych w poszukiwaniu wyników dla żądanych numerów NIP na bieżący dzień.  
+Numery NIP nie znajdujące się w bazie na dany dzień zostaną doniej dodane po odpytaniu API MF.  
+Walidacja numerów NIP i wykluczenie powtarzających się numerów ma miejsce po stronie klienta.  
   
 Plik wejściowy: Jeden numer NIP na jedną linię.  
 Przykładowe dane:  
