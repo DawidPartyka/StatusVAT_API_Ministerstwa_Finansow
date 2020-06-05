@@ -32,7 +32,7 @@ let dataObj = {
   callAPI: function(data, res){
     //.. Function making a proper call to the API
     async function call(nip){
-      var url = 'https://sprawdz-status-vat.mf.gov.pl/?wsdl'; //API adress
+      const url = 'https://sprawdz-status-vat.mf.gov.pl/?wsdl'; //API adress
 
       let promise = new Promise((resolve, rej) => {
         setTimeout(function(){
@@ -45,13 +45,13 @@ let dataObj = {
                 comm: result.Komunikat,
                 nip: nip,
                 date: moment().format('YYYYMMDD'),
-                origin: 'API'
+                origin: 'API'               //Set origin to 'API'. It will be shown that way in dataObj.show()
               }
 
               dataObj.addResult(tmpObj);    //Save result
 
               tmpObj.origin = 'Stored';     //Change origin to be stored in savedData
-              savedData.push(tmpObj);       //Add to saved results
+              savedData.push(tmpObj);       //Add to result savedData module
               resolve(tmpObj);              //Returns result. It's redundant
             });
           });
@@ -66,13 +66,12 @@ let dataObj = {
         call(param[0]).then(function(){
           param.splice(0, 1);               //Shift data after the call
 
-          if(param.length){
+          if(param.length){                 //If data not empty continue
             recurseCalls(param);
           }
-          else{
+          else{                             //All data has been processed
             console.log('all data processed');
-            dataObj.show();
-            dataObj.finalize(res);
+            dataObj.finalize(res);          //Send data back to client
           }
         });
       }
@@ -91,10 +90,10 @@ let dataObj = {
 
     recurseCalls(data);                     //Start calls to API
   },
-  finalize: function(res){
-    this.show();
-    res.json(this.results);
-    res.status(200).send();
+  finalize: function(res){                  //Sending data back to client
+    this.show();                            //Display data in console
+    res.json(this.results);                 //Send results attribute as JSON
+    res.status(200).send();                 //Everything's OK
     this.results = [];                      //Empty results
   }
 }
