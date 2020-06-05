@@ -32,6 +32,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.post('/vats', function(req, res){         //Handle POST request from page
   req.on('data', data => {
-    getVATdata.check(JSON.parse(data), res);
+    getVATdata.check(JSON.parse(data), res);  //Passing data to module with the response object
+                                              //Module handles the response
   });
 });
