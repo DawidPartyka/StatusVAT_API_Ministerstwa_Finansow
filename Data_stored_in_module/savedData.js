@@ -1,4 +1,4 @@
-const nips = [
+const nips = [ //Already with some test data
    {
         status: 'C',
         comm: 'Podmiot o podanym identyfikatorze podatkowym NIP jest zarejestrowany jako podatnik VAT czynny',
