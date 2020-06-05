@@ -1,8 +1,8 @@
 const soap = require('soap');
 const mysql = require('mysql');
 
-Date.prototype.formatDate = function() {                      //Format date into YYYY-MM-DD
-let mm = this.getMonth() + 1; //getMonth() is zero-based
+Date.prototype.formatDate = function() {        //Format date into YYYY-MM-DD
+let mm = this.getMonth() + 1;                   //getMonth() is zero-based
 let dd = this.getDate();
 
 return [this.getFullYear(),
@@ -12,30 +12,29 @@ return [this.getFullYear(),
 };
 
 const finalize = {
-  res: '',
-  saveRes: function(data){
+  res: '',                                //Placeholder for the response object
+  saveRes: function(data){                //Saves response object passed to the module from main script
     this.res = data;
   },
-  send: function(results){
-    dataObj.show();
-    this.res.json(results);
-    this.res.status(200).send();
-    dataObj.results = [];                      //Empty results
+  send: function(results){                //Final method. Sends data to client and empties results attribute
+    dataObj.show();                       //Display processed data in console
+    this.res.json(results);               //Return data as JSON array of objects
+    this.res.status(200).send();          //Everything's OK
+    dataObj.results = [];                 //Empty results
   }
 }
 
 const dataObj = {
-  startValues: '',                        //Placeholder for data received through POST
   results: [],                            //Placeholder for results
   date: new Date().formatDate(),          //Placeholder for current date
-  show: function(){                       //Log stored data in console
+  show: function(){                       //Display stored data in console
     let tmp = this.results;
     for(let i = 0; i < tmp.length; i++){
       let info = `Element ${i} {\n\tkod: ${tmp[i].kod},\n\tkomunikat: ${tmp[i].komunikat},\n\tdate: ${tmp[i].date}\n\tnip: ${tmp[i].nip}\n\tOrigin: ${tmp[i].origin}\n}\n`
       console.log(info);
     }
   },
-  commFromCode: function(code){            //Get a messeage based on the NIP number status
+  commFromCode: function(code){           //Get a messeage based on the NIP number status. They're not stored in DB
     switch (code) {
       case 'N':
         return 'Podmiot o podanym identyfikatorze podatkowym NIP nie jest zarejestrowany jako podatnik VAT';
@@ -76,7 +75,7 @@ const dataObj = {
                 comm: result.Komunikat,
                 nip: nip,
                 date: dataObj.date,
-                origin: 'API'
+                origin: 'API'               //Setting origin as 'API' to differentiate it for inserting to database later on
               }
 
               dataObj.addResult(tmpObj);    //Save result
@@ -98,12 +97,12 @@ const dataObj = {
             recurseCalls(param);
           }
           else{
-            DBobj.insertNIP(dataObj.results); //Insert results to DB
+            DBobj.insertNIP(dataObj.results);//Insert results to DB after all NIP identificators has been processed
             console.log('all data processed');
           }
         });
       }
-      else{                                 //Whole else will be changed. Test only.
+      else{                                 //Whole else will be changed. Test only. It's redundant
         param.splice(0, 1);
         if(param.length){
           recurseCalls(param);
@@ -122,14 +121,14 @@ const dataObj = {
 
 const DBobj = {
   initDB: function(obj){
-    this.connection = mysql.createConnection({                //Connection DB data
+    this.connection = mysql.createConnection({        //Connection DB data
       host: obj.host,
       user: obj.user,
       password: obj.pass,
       database: obj.db
     })
 
-    this.connect(); //Check if there's connection
+    this.connect();                                   //Check if there's connection
   },
   connect: function(){                                //Open connection with DB
     let flag = false;                                 //Flag to determine if connection succeeded
@@ -145,14 +144,14 @@ const DBobj = {
       }
     });
 
-    return flag;                                        //Possibility to check if connection failed while using the moethod
+    return flag;                                        //Possibility to check if connection failed while using the method
   },
   kill: function(){                                     //Close connection with DB
     this.connection.end();
     console.log('Closed DB connection');
   },
-  checkNIP: function(data, res){                        //data = nip numbers (array), date = check status of given nip for given date
-    finalize.saveRes(res);
+  checkNIP: function(data, res){                        //data = nip numbers (array)
+    finalize.saveRes(res);                              //Save response object to send back data later on
     let date = dataObj.date;                            //Get current date
     let query = `SELECT * FROM status_nip WHERE `;      //Placeholder for query to DB
 
@@ -162,7 +161,7 @@ const DBobj = {
 
     query = query.substring(0, query.length - 4) + `;`; //Trims last 'OR' and adds ';'
 
-    this.connection.query(query, (err,rows) => {        //Query to DB
+    this.connection.query(query, (err,rows) => {        //Query (SELECT) to DB
       if(err){
         console.log('Query failed');
         throw err;
@@ -192,7 +191,7 @@ const DBobj = {
           dataObj.callAPI(data);                        //If there're some NIP numbers left get data from API
         }
         else{
-          finalize.send(dataObj.results);                           //No data to process left. Send response to client
+          finalize.send(dataObj.results);               //No data to process left. Send response to client
         }
       }
     });
