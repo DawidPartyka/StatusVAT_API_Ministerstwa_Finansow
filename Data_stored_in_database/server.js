@@ -33,7 +33,7 @@ app.use(express.urlencoded({ extended: true }));
 app.post('/vats', function(req, res){                           //Handle POST request from page
   req.on('data', data => {
     console.log('received data');
-    getVATdata.initDB({host: 'localhost', user: 'root', pass: '', db: 'systemy_zintegrowane'}); //Data for connection to DB
+    getVATdata.initDB({host: 'host', user: 'user', pass: 'password', db: 'database_name'}); //Data for connection to DB
     getVATdata.checkNIP(JSON.parse(data), res);
   });
 });
