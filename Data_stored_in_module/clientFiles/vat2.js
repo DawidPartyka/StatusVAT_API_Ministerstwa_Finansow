@@ -38,7 +38,7 @@ const writeFile = {
 }
 
 const receivedData = {
-  checkNIP: {
+  checkNIP: {                       //Validate NIP
     weight: [6, 5, 7, 2, 3, 4, 5, 6, 7],
     check: function(nip){
       let sum = 0;
@@ -49,9 +49,9 @@ const receivedData = {
       return sum % 11 === parseInt(nip.substring(9, 10));
     }
   },
-  getData: function(arr){
+  getData: function(arr){              //Prepare and send data received from file
     console.log(`arr length: ${arr.length}`);
-    let send = [];
+    let send = [];                     //Placeholder for data to be sent
 
     arr.forEach((entry) => {
       if(this.checkNIP.check(entry)){  //Validate NIP
@@ -64,27 +64,33 @@ const receivedData = {
     });
 
     console.log(`sending length: ${send.length}`);
-    console.log('calling server');
 
-    $.ajax({
-              url: '/vats',
-              type: 'POST',
-              contentType: 'json/application',
-              data: JSON.stringify(send), //NIPy
-              success: function(response){
-                console.log('success');
-                let obj = response;
-                let data = [];
+    if(send.length){  //Sanity check
+      console.log('calling server');
 
-                while(obj.length){
-                  console.log('\tkod: ' + obj[0].kod + ',\n\tkomunikat: ' + obj[0].komunikat + ',\n\tnip: ' + obj[0].nip + '\n');
-                  data.push({nip: obj[0].nip, comm: obj[0].komunikat, code: obj[0].kod});
-                  obj.shift();
+      $.ajax({
+                url: '/vats',
+                type: 'POST',
+                contentType: 'json/application',
+                data: JSON.stringify(send), //NIP numbers in form of JSON array
+                success: function(response){
+                  console.log('success');
+                  let obj = response;
+                  let data = [];
+
+                  while(obj.length){
+                    console.log('\tkod: ' + obj[0].kod + ',\n\tkomunikat: ' + obj[0].komunikat + ',\n\tnip: ' + obj[0].nip + '\n');
+                    data.push({nip: obj[0].nip, comm: obj[0].komunikat, code: obj[0].kod});
+                    obj.shift();
+                  }
+
+                  writeFile.write(data);
                 }
-
-                writeFile.write(data);
-              }
-            });
+              });
+    }
+    else{
+      alert('Brak poprawnych danych do przetworzenia');
+    }
   }
 }
 
@@ -99,12 +105,12 @@ $(document).ready(function(){
 
       r.onload = function(e) {
         const contents = e.target.result;
-        const dataArr = contents.substr(0, contents.length).replace(/\r/g, "").split("\n");
+        const dataArr = contents.substr(0, contents.length).replace(/\r/g, "").split("\n"); //Data read from file split into an array on new lines
         //console.log(dataArr);
 
         if(dataArr.length){
           console.log(dataArr.length);
-          receivedData.getData(dataArr);
+          receivedData.getData(dataArr);  //Prepare and send data to server
         }
       }
 
